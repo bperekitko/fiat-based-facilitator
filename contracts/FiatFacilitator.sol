@@ -9,12 +9,14 @@ import "./libraries/PercentageMath.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 contract FiatFacilitator is IGhoFacilitator, Ownable {
-    using PercentageMath for uint256;
+    using PercentageMath for uint256; 
 
     IGhoToken public immutable GHO_TOKEN;
     address private _ghoTreasury;
     uint256 private _fee;
     AggregatorV3Interface private _reservesAggergator;
+
+    event FiatMint(uint256 indexed amount, uint256 fee);
 
     constructor(
         address ghoToken,
@@ -28,8 +30,30 @@ contract FiatFacilitator is IGhoFacilitator, Ownable {
         _reservesAggergator = AggregatorV3Interface(reservesAggreagator);
     }
 
+    function mint(uint amount) external onlyOwner {
+        (, uint bucketLevel) = GHO_TOKEN.getFacilitatorBucket(address(this));
+        require(
+            bucketLevel + amount <= uint(_getReserves()),
+            "Not enough reserves to mint new tokens"
+        );
+        GHO_TOKEN.mint(address(this), amount);
+        uint fee = _calculateFee(amount);
+        GHO_TOKEN.transfer(owner(), amount - fee);
+
+        emit FiatMint(amount, fee);
+    }
+
+    function burn(uint amount) external onlyOwner {
+        bool result = GHO_TOKEN.transferFrom(owner(), address(this), amount);
+        require(result, "Could not transfer tokens from owner to burn");
+        GHO_TOKEN.burn(amount);
+    }
+
     function isHealthy() public view returns (bool) {
-        return _getReserves() > 1000; // TO DO implement
+        (, uint bucketLevel) = GHO_TOKEN.getFacilitatorBucket(address(this));
+        int currentReservers = _getReserves();
+
+        return currentReservers > 0 && uint(currentReservers) >= bucketLevel;
     }
 
     function getCurrentReserves() external view returns (int) {
@@ -37,7 +61,13 @@ contract FiatFacilitator is IGhoFacilitator, Ownable {
     }
 
     function distributeFeesToTreasury() external override onlyOwner {
-        // TODO implement me
+        uint256 balance = GHO_TOKEN.balanceOf(address(this));
+        GHO_TOKEN.transfer(_ghoTreasury, balance);
+        emit FeesDistributedToTreasury(
+            _ghoTreasury,
+            address(GHO_TOKEN),
+            balance
+        );
     }
 
     function updateGhoTreasury(
@@ -68,5 +98,9 @@ contract FiatFacilitator is IGhoFacilitator, Ownable {
     function _updateFee(uint256 newFee) internal {
         require(newFee <= 10000, "Cannot set fee bigger than 100%");
         _fee = newFee;
+    }
+
+    function _calculateFee(uint256 amount) internal view returns (uint256) {
+        return amount.percentMul(_fee);
     }
 }
