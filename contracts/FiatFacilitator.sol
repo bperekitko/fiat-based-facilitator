@@ -13,7 +13,7 @@ contract FiatFacilitator is IGhoFacilitator, Ownable {
 
     IGhoToken public immutable GHO_TOKEN;
     address private _ghoTreasury;
-    uint256 private _fee;
+    uint256 private _fee = 1;
     AggregatorV3Interface private _reservesAggergator;
 
     event FiatMint(uint256 indexed amount, uint256 fee);
@@ -21,12 +21,10 @@ contract FiatFacilitator is IGhoFacilitator, Ownable {
     constructor(
         address ghoToken,
         address ghoTreasury,
-        address reservesAggreagator,
-        uint fee
+        address reservesAggreagator
     ) Ownable(msg.sender) {
         GHO_TOKEN = IGhoToken(ghoToken);
         _updateGhoTreasury(ghoTreasury);
-        _updateFee(fee);
         _reservesAggergator = AggregatorV3Interface(reservesAggreagator);
     }
 

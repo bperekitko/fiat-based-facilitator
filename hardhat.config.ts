@@ -2,14 +2,20 @@ import "@nomicfoundation/hardhat-toolbox";
 import * as dotenv from 'dotenv';
 import { HardhatUserConfig, task } from "hardhat/config";
 
+import './scripts/gho-token';
+import './scripts/deploy';
+import './scripts/mint';
+
 dotenv.config()
 
 const config: HardhatUserConfig = {
-  defaultNetwork: "sepolia",
+  defaultNetwork: "localhost",
   networks: {
-    sepolia: {
-      url: `https://eth-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
-      accounts: [`${process.env.WALLET_PRIVATE_KEY}`]
+    hardhat:{
+      forking:{
+        url: `https://eth-mainnet.g.alchemy.com/v2/${process.env.MAINNET_ALCHEMY_API_KEY}`,
+      },
+      accounts: [{privateKey: `${process.env.WALLET_PRIVATE_KEY}`, balance: `${5 * 10**18}`}]
     },
   },
   solidity: "0.8.20",
