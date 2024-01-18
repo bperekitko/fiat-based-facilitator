@@ -1,13 +1,28 @@
-# Sample Hardhat Project
+# Simple implementation of Aave GHO token facilitator. Using proof-of-reserves for off-chain collateral.
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
+Testing:
+- create .env file based on the provided .env-example
 
-Try running some of the following tasks:
-
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
+```
+npm install
 npx hardhat node
-npx hardhat run scripts/deploy.ts
+```
+
+Tasks to run for deploying facilitator to local network and minting GHO:
+```
+npx hardhat deploy-aggregator
+```
+
+```
+npx hardhat deploy-facilitator <aggregator-address>
+```
+```
+npx hardhat add-facilitator <facilitator-address>
+```
+```
+npx hardhat add-reserves <amount <aggregator-address>
+```
+
+```
+npx hardhat mint-gho <amount <facilitator-address>
 ```

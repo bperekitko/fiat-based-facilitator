@@ -26,7 +26,7 @@ task('add-facilitator')
 
     const signer = (await hre.ethers.getSigners())[0];
 
-    const sendTx = await signer.sendTransaction({to: FACILITATOR_ADMIN_ADDRESS, value: hre.ethers.parseEther('2')})
+    const sendTx = await signer.sendTransaction({to: FACILITATOR_ADMIN_ADDRESS, value: hre.ethers.parseEther('1')})
     await sendTx.wait();
   
     const admin = await hre.ethers.getImpersonatedSigner(FACILITATOR_ADMIN_ADDRESS);
