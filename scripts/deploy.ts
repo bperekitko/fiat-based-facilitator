@@ -14,7 +14,7 @@ task('deploy-facilitator')
     const aggregatorAddress = args['aggregatorAddress'];
     const deploying = await hre.ethers.deployContract('FiatFacilitator', [GHO_ADDRESS, TREASURY_ADDRESS, aggregatorAddress]);
     const facilitator = await deploying.waitForDeployment();
-    console.log('Agregator deployed at: ', await facilitator.getAddress());
+    console.log('Facilitator deployed at: ', await facilitator.getAddress());
 })
 
 

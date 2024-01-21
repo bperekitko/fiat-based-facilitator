@@ -20,9 +20,9 @@ npx hardhat deploy-facilitator <aggregator-address>
 npx hardhat add-facilitator <facilitator-address>
 ```
 ```
-npx hardhat add-reserves <amount <aggregator-address>
+npx hardhat add-reserves <amount> <aggregator-address>
 ```
 
 ```
-npx hardhat mint-gho <amount <facilitator-address>
+npx hardhat mint-gho <amount> <facilitator-address>
 ```
